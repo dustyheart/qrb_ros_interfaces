@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(qrb_ros_audio_service_msgs VERSION 2.0.1)
+project(qrb_ros_audio_service_msgs VERSION 3.0.0)
 
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
@@ -12,11 +12,15 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   msg/AudioInfo.msg
   msg/AudioData.msg
+  msg/AudioVadState.msg
+  msg/AudioStreamStatus.msg
   srv/AudioRequest.srv
+  DEPENDENCIES std_msgs
 )
 
 ament_export_dependencies(rosidl_default_runtime)

@@ -23,8 +23,42 @@ bool pub_pcm
 string topic_name
 # Need to specify it when requesting the "mute" command.
 bool mute
+
+# ---- Added in 3.0.0 (all fields below default to the pre-3.0.0 behavior) ----
+
+# Record streams with pub_pcm only, read on "create": fill AudioData.header.stamp
+# with the capture time of the first sample of each chunk. false (default):
+# AudioData.header.stamp is left zero. Ignored for record-to-file (source set).
+bool need_timestamp
+
+# Per-stream overrides, read on "create" only. Empty / 0 = use the node's
+# process-wide ROS parameter, i.e. the pre-3.0.0 behavior.
+# device: backend device name (record: overrides capture_device, playback:
+#  overrides playback_device), e.g.
+#  "alsa_input.platform-sound.HiFi__hw_LEMANSEVK_1__source". An unknown name
+#  fails "create" with error_code "device_unavailable".
+string device
+# fragment_duration_ms: record streams only (overrides
+#  capture_fragment_duration_ms): requested duration of each AudioData chunk
+#  in milliseconds. Ignored for playback (playback_buffer_duration_ms stays a
+#  node parameter). Out-of-range values fail "create" with error_code
+#  "invalid_config".
+uint32 fragment_duration_ms
 ---
 bool success
 # The handle indicate the stream created by Audio Service when command is "create".
 uint32 stream_handle
 string[] buildin_sound_name
+
+# ---- Added in 3.0.0 ----
+
+# Machine-readable failure category, empty when success is true. One of:
+#  "invalid_config", "device_unavailable", "unsupported_format",
+#  "backend_init_failed", "stream_state_conflict", "processor_init_failed",
+#  "processor_process_failed", "resource_exhausted", "internal_error",
+#  "invalid_handle", "unknown_command".
+# Clients must treat unknown values as "internal_error" (the list may grow).
+string error_code
+# Human-readable detail for logs / UI, e.g. "capture device 'x' not found;
+# available: ...". Not stable across versions; do not parse.
+string error_message
